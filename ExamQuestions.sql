@@ -152,8 +152,7 @@ from Student s
 left join ScholarShip sh
 on s.StudentId = sh.ScholarShipId
 
---24.  Write an SQL query to show the top n (say 5) records of Student table 
---order by descending GPA. 
+--24.  Write an SQL query to show the top n (say 5) records of Student table order by descending GPA. 
 select Top 5 * 
 from Student
 order by GPA desc
@@ -164,3 +163,132 @@ SELECT DISTINCT GPA
 FROM Student
 ORDER BY GPA DESC
 OFFSET 4 ROWS FETCH NEXT 1 ROWS ONLY;
+
+
+--26.  Write an SQL query to determine the 5th highest GPA without using LIMIT keyword.
+
+select * from Student s1
+where 4 = 
+(
+select count(distinct(s2.GPA)) 
+from Student s2
+where s1.GPA>s2.GPA
+)
+
+--27.  Write an SQL query to fetch the list of Students with the same GPA. 
+--eyni data olsun deye elave etmisem
+insert into Student
+values('Murad','Sadigov',9,'11-05-2025','Computer Science')
+
+select s1.FirstName,s1.LastName,s1.GPA 
+from Student s1
+join Student s2
+on s1.GPA = s2.GPA and s1.StudentId <> s2.StudentId
+order by s1.GPA
+
+--or
+select s1.FirstName,s1.LastName,s1.GPA 
+from Student s1,Student s2
+where s1.GPA=s2.GPA and s1.StudentId != s2.StudentId
+
+--28.  Write an SQL query to show the second highest GPA from a Student table using sub-query. 
+
+select Max(GPA) from Student
+where GPA not in(select Max(GPA) from Student)
+
+--29.  Write an SQL query to list STUDENT_ID who does not get Scholarship.
+
+select * from ScholarShip
+where ScholarShipAmount is null
+
+--30.  Write an SQL query to fetch the first 50% records from a table. 
+select top 50 percent *
+from Student
+order by FirstName
+
+--31.  Write an SQL query to fetch the MAJOR subject that have less than 4 people in it. 
+select Major,COUNT(Major) MajorCount
+from Student
+group by Major
+having COUNT(Major)<4
+
+--32.  Write an SQL query to show all MAJOR subject along with the number  of people in there. 
+select Major,COUNT(Major) AllMajor
+from Student
+group by Major
+
+--33.  Write an SQL query to show the last record from a table. 
+Select StudentId,FirstName,LastName from Student
+where StudentId = (select max(StudentId) from Student)
+
+
+--34.  Write an SQL query to fetch the first row of a table. 
+select StudentId,FirstName,LastName from Student
+where StudentId = (select min(StudentId) from Student)
+
+--35.  Write an SQL query to fetch the last five records from a table. 
+SELECT TOP 5 *
+FROM Student
+WHERE StudentId IN (
+    SELECT TOP 5 StudentId
+    FROM Student
+    ORDER BY StudentId DESC
+)
+ORDER BY StudentId ASC
+
+--36.  Write an SQL query to fetch three max GPA from a table using co-related subquery. 
+select distinct GPA from Student s1
+where 3 >= (select count(distinct GPA) from Student s2 where s1.GPA < s2.GPA) order by s1.GPA desc
+
+--37.  Write an SQL query to fetch three min GPA from a table using co-related subquery. 
+select distinct GPA from Student s1
+where 3 >= (select count(distinct GPA) from Student s2 where s1.GPA > s2.GPA) order by s1.GPA 
+
+--38.  Write an SQL query to fetch nth max GPA from a table. 
+select distinct GPA from Student s1
+where GPA = (select count(distinct GPA) from Student s2 where s2.GPA < s1.GPA)
+order by s1.GPA desc
+
+--39.  Write an SQL query to fetch MAJOR subjects along with the max GPA in each of these MAJOR subjects. 
+select Major,Max(GPA) as MaxGpa
+from Student
+group by Major
+
+--40.  Write an SQL query to fetch the names of Students who has highest GPA.
+select FirstName + ' ' + LastName,GPA
+from Student
+where GPA=(select max(GPA) from Student)
+
+--41.  Write an SQL query to show the current date and time. 
+select GETDATE() 
+
+--42.  Write a query to create a new table which consists of data and structure  copied from the other table (say Student) or clone the table named Student. 
+select * 
+into NewStudentTable
+from Student	
+
+--43.  Write an SQL query to update the GPA of all the students in 'Computer Science' MAJOR subject to 7.5. 
+update Student
+set GPA = 7.5
+where Major = 'Computer Science'
+
+--44.  Write an SQL query to find the average GPA for each major. 
+select Major,AVG(Gpa) as AverageGPA
+from Student
+group by Major
+order by AverageGPA
+
+--45.  Write an SQL query to show the top 3 students with the highest GPA. 
+select top 3 FirstName + ' ' + LastName,GPA
+from Student
+order by GPA desc
+
+--46. Write an SQL query to find the number of students in each major who have a GPA greater than 7.5. 
+select count(StudentId),MAJOR
+from Student
+where GPA >= 7.5
+group by Major
+
+--47.  Write an SQL query to find the students who have the same GPA as  'Shivansh Aliyev'. 
+select * from Student
+where GPA = (select GPA from Student where FirstName = 'Shivansh' and LastName = 'Aliyev')
