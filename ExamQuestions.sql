@@ -292,3 +292,147 @@ group by Major
 --47.  Write an SQL query to find the students who have the same GPA as  'Shivansh Aliyev'. 
 select * from Student
 where GPA = (select GPA from Student where FirstName = 'Shivansh' and LastName = 'Aliyev')
+
+--48.  Write an SQL query that returns the project number and name for projects with a budget greater than $100,000. (employee (eno, ename, 
+--bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname, mgreno) && workson (eno, pno, resp, 
+--hours)) 
+SELECT pno, pname
+FROM Projects
+WHERE budget > 100000;
+
+--49.  Write an SQL query that returns all works on records where hours worked is less than 10 and the responsibility is 'Manager'. (employee 
+--(eno, ename, bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname, mgreno) && workson (eno, pno, resp, hours)) 
+SELECT *
+FROM Workson
+WHERE hours < 10 AND resp = 'Manager';
+
+
+--50.  Write an SQL query that returns the employees (number and name only) who have a title of 'EE' or 'SA' and make more than $35,000. (employee (eno, ename, bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname, mgreno) && workson (eno, pno, resp, hours)) 
+ 
+ SELECT eno, ename
+FROM Employee
+WHERE title IN ('EE', 'SA') AND salary > 35000;
+
+--51.  Write an SQL query that returns the employees (name only) in department 'D1' ordered by decreasing salary. (employee (eno, ename, 
+--bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname, mgreno) && workson (eno, pno, resp, hours)) 
+SELECT e.ename
+FROM Employee e
+JOIN Departments d
+ON e.dno = d.dno
+WHERE d.dname = 'D1'
+ORDER BY e.salary DESC;
+
+
+--52.  Write an SQL query that returns the departments (all fields) ordered by ascending department name. (employee (eno, ename, bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname, mgreno) && workson (eno, pno, resp, hours)) 
+SELECT *
+FROM Departments
+ORDER BY dname ASC;
+
+--53.  Write an SQL query that returns the employee name, department name, and employee title. (employee (eno, ename, bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname,  mgreno) && workson (eno, pno, resp, hours)) 
+SELECT e.ename AS EmployeeName, d.dname AS DepartmentName, e.title AS EmployeeTitle
+FROM Employee e
+JOIN Departments d
+ON e.dno = d.dno;
+
+--54.  Write an SQL query that returns the project name, hours worked, and project number for all works on records where hours > 10. (employee 
+--(eno, ename, bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname, mgreno) && workson (eno, pno, resp, hours)) 
+SELECT p.pname AS ProjectName, w.hours AS HoursWorked, p.pno AS ProjectNumber
+FROM Projects p
+JOIN Workson w
+ON p.pno = w.pno
+WHERE w.hours > 10;
+
+--55.  Write an SQL query that returns the project name, department name, and budget for all projects with a budget < $50,000. (employee (eno, ename, bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname, mgreno) && workson (eno, pno, resp, hours)) 
+SELECT p.pname AS ProjectName, d.dname AS DepartmentName, p.budget AS Budget
+FROM Projects p
+JOIN Departments d
+ON p.dno = d.dno
+WHERE p.budget < 50000;
+
+--56.  Write an SQL query that returns the employee numbers and salaries of all employees in the 'Consulting' department ordered by descending 
+--salary. (employee (eno, ename, bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname, mgreno) && workson (eno, pno, resp, hours)) 
+SELECT e.eno AS EmployeeNumber, e.salary AS Salary
+FROM Employee e
+JOIN Departments d
+ON e.dno = d.dno
+WHERE d.dname = 'Consulting'
+ORDER BY e.salary DESC;
+
+
+--57.  Write an SQL query that returns the employee name, project name, employee title, and hours for all works on records. (employee (eno, 
+--ename, bdate, title, salary, dno) && projects (pno, pname, budget, dno) && departments  (dno, dname, mgreno) && workson (eno, pno, resp, 
+--hours)) 
+SELECT e.ename AS EmployeeName, p.pname AS ProjectName, e.title AS EmployeeTitle, w.hours AS Hours
+FROM Employee e
+JOIN Workson w ON e.eno = w.eno
+JOIN Projects p ON w.pno = p.pno;
+
+--58.  Write the SQL query which Find the name and price of the cheapest item(s). 
+SELECT Name, Price
+FROM Items
+WHERE Price = (SELECT MIN(Price) FROM Items);
+
+--59.  Retrieve the sale_id and sale_date from the Sales table, formatting the sale_date as 'YYYY-MM-DD'. 
+SELECT SaleId, FORMAT(SaleDate, 'yyyy-MM-dd') AS sale_date
+FROM Sales;
+
+--60.  Retrieve the product_name and unit_price from the Products table, filtering the unit_price to show only values between $20 and $600.  
+SELECT ProductName, UnitPrice
+FROM Products
+WHERE UnitPrice BETWEEN 20 AND 600;
+
+--61.  Calculate the total revenue generated from sales for each product category.  
+SELECT p.category, SUM(s.TotalPrice) AS total_revenue
+FROM Sales s
+JOIN Products p ON s.ProductId = p.ProductId
+GROUP BY p.category;
+--62.  Identify products with total sales exceeding 30. 
+SELECT p.ProductName
+FROM Sales s
+JOIN Products p ON s.ProductId = p.ProductId
+GROUP BY p.ProductName
+HAVING SUM(s.TotalPrice) > 30;
+--63.  Count the number of sales made in each month.
+SELECT FORMAT(SaleDate,'yyyy-MM') AS month, COUNT(*) AS sales_count
+FROM Sales s
+GROUP BY FORMAT(SaleDate,'yyyy-MM')
+--64.  Determine the average quantity sold for products with a unit price greater than $100. 
+SELECT AVG(s.QuantitySold) AS average_quantity_sold
+FROM Sales s
+JOIN Products p ON s.ProductId = p.ProductId
+WHERE p.UnitPrice > 100;
+--65.  Retrieve the product name and total sales revenue for each product.
+SELECT p.ProductName, SUM(s.TotalPrice) AS total_revenue
+FROM Sales s
+JOIN Products p ON s.ProductId = p.ProductId
+GROUP BY p.ProductName
+--66.  List all sales along with the corresponding product names. 
+SELECT s.SaleId, p.ProductName
+FROM Sales s
+JOIN Products p ON s.ProductId = p.ProductId;
+--67.  Categorize sales as "High", "Medium", or "Low" based on total price (e.g., > $200 is High, $100-$200 is Medium, < $100 is Low). 
+SELECT SaleId, 
+       CASE 
+           WHEN TotalPrice > 200 THEN 'High'
+           WHEN TotalPrice BETWEEN 100 AND 200 THEN 'Medium'
+           ELSE 'Low'
+       END AS sales_category
+FROM Sales;
+--68.  Identify sales where the quantity sold is greater than the average quantity sold.  
+SELECT * FROM Sales
+WHERE QuantitySold > (SELECT AVG(QuantitySold) FROM Sales);
+--69.  Extract the month and year from the sale date and count the number of  sales for each month. 
+ SELECT FORMAT(SaleDate, 'yyyy-MM') AS MonthYear, COUNT(*) AS SalesCount
+FROM Sales
+GROUP BY FORMAT(SaleDate, 'yyyy-MM')
+ORDER BY MonthYear;
+
+--70.  Retrieve the product details (name, category, unit price) for products that have a quantity sold greater than the average quantity sold across all products. 
+SELECT ProductName, category, UnitPrice
+FROM Products
+WHERE ProductId IN (
+    SELECT ProductId
+    FROM Sales
+    GROUP BY ProductId
+    HAVING SUM(QuantitySold) > (SELECT AVG(QuantitySold) FROM Sales)
+)
